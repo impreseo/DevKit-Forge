@@ -1,9 +1,9 @@
 # DevKit Forge 🛠️
 
 > **Fast, private, browser-native developer toolkit with a desktop IDE aesthetic.**  
-> 100% client-side processing • Zero server uploads • Zero telemetry • Zero tracking cookies
+> 100% Client-Side Processing • Zero Server Relays • Zero Telemetry • Zero Trackers
 
-[![CI](https://github.com/impreseo/devkit-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/impreseo/devkit-forge/actions)
+[![CI](https://github.com/impreseo/DevKit-Forge/actions/workflows/ci.yml/badge.svg)](https://github.com/impreseo/DevKit-Forge/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61dafb)](https://react.dev/)
@@ -13,161 +13,196 @@
 
 ---
 
+### 🌐 Live Application Demo
+**Try DevKit Forge directly in your browser:**  
+👉 **[https://impreseo.github.io/DevKit-Forge/](https://impreseo.github.io/DevKit-Forge/)**
+
+---
+
 ## 💡 Overview
 
-Modern developer utility websites are frequently overloaded with heavy tracking scripts, intrusive banner ads, slow server-side relays, and oversized marketing pages. **DevKit Forge** provides an open-source, desktop-inspired developer toolkit engineered for speed, privacy, and utility.
+Web-based developer utility sites are frequently overloaded with third-party tracking scripts, intrusive advertising banners, slow server roundtrips, and oversized marketing landing pages. Sending code snippets, tokens, configuration files, and data structures to third-party backends can also pose real data confidentiality risks.
 
-All data parsing, compression, regex matching, diffing, and previewing happens **entirely within your browser's memory**. No inputs are ever sent to an external server.
+**DevKit Forge** solves this with an open-source, client-side toolkit engineered for speed, utility, and privacy. Every data transformation, regular expression match, structural diff, and markdown render happens **entirely inside your browser's local memory**. No inputs are transmitted over the network.
 
 ---
 
-## ✨ Features & Included Utilities
+## ✨ Implemented Tools & Features
+
+DevKit Forge currently includes **7 focused developer utilities**, organized into modular suites with a desktop IDE interface:
 
 ### 1. JSON Suite
-- **JSON Formatter & Prettifier:** Format nested JSON with configurable indentation (2 spaces, 4 spaces, or tabs) and optional alphabetical key sorting.
-- **JSON Minifier & Compressor:** Strip unneeded whitespace and inspect compression statistics (original bytes, minified bytes, space saved, compression %).
-- **JSON Validator & Syntax Inspector:** RFC 8259 syntax checker with exact line/column pointers, error excerpt snippets, and structural metrics (key count, nesting depth, root type).
-- **JSON Comparison & Diff:** Deep structural path-by-path comparison identifying additions, removals, and modifications with color-coded badges and swap controls.
+* **JSON Formatter:** Prettify and format arbitrary JSON with configurable indentation (2 spaces, 4 spaces, or tabs) and optional alphabetical key sorting.
+* **JSON Minifier:** Strip unneeded whitespace and compress JSON into a single line while reporting original bytes, minified bytes, bytes saved, and compression percentage.
+* **JSON Validator:** RFC 8259 syntax checker with exact line and column pointers, error snippet excerpts, and structural metrics (key count, maximum nesting depth, and root data type).
+* **JSON Comparison (Diff):** Deep recursive structural path-by-path comparison identifying additions, removals, and modifications with color-coded badges, side-by-side review, and swap controls.
 
-### 2. Regular Expression Tester
-- **Real-Time Match Highlighting:** Matches are highlighted in alternating badges directly over the test text.
-- **Full Flag Support:** Toggle `g` (global), `i` (ignore case), `m` (multiline), `s` (dotAll), `u` (unicode), and `y` (sticky).
-- **Match Inspector:** Inspects match index spans, match lengths, and named or numbered capture groups.
-- **Syntax Error Diagnostics:** Friendly explanations for common regex pitfalls (unclosed parentheses, dangling quantifiers, unclosed character classes).
-- **Worker-isolated execution:** Regex evaluation runs in a terminable Web Worker with a 500 ms timeout and input-size limits to protect the UI from pathological patterns.
-- **Curated Presets:** Ready-to-test patterns for Email, URL, SemVer, IPv4, ISO 8601 timestamps, Hex colors, and UUID v4.
+### 2. Regular Expression Suite
+* **Regex Tester:** Real-time pattern evaluation against test strings with alternating highlight badges.
+* **Full Flag Support:** Toggle `g` (global), `i` (ignore case), `m` (multiline), `s` (dotAll), `u` (unicode), and `y` (sticky).
+* **Match & Capture Group Inspector:** Detailed breakdown of match index spans, match lengths, and named/numbered capture groups.
+* **Worker-Isolated Execution:** Pattern evaluation runs in a dedicated, terminable Web Worker with a 500 ms safety timeout to protect the UI thread from catastrophic backtracking (ReDoS).
+* **Curated Pattern Presets:** Quick-load test patterns for Email, URL, SemVer, IPv4, ISO 8601 timestamps, Hex colors, and UUID v4.
 
-### 3. Curated .gitignore Generator
-- **Zero-Network Generation:** 15+ curated local templates for languages (Node.js, Python, Rust, Go, Java, C/C++), frameworks (React/Vite, Next.js, Flutter), OS (macOS, Windows, Linux), and editors (VS Code, JetBrains, Vim).
-- **Category Filter & Tag Selection:** Search templates, toggle multiple tags, append custom project rules, and download `.gitignore` directly.
+### 3. Git Utilities
+* **.gitignore Generator:** 15+ curated local templates across Languages (Node.js, Python, Rust, Go, Java, C/C++), Frameworks (React/Vite, Next.js, Flutter), Operating Systems (macOS, Windows, Linux), and Editors (VS Code, JetBrains, Vim).
+* **Zero-Network Generation:** Templates are compiled directly into the client bundle—no external GitHub API calls or internet connection required.
+* **Custom Rules & Export:** Filter templates by category, toggle multiple tags, append project-specific rules, and copy to clipboard or download directly as a `.gitignore` file.
 
-### 4. Safe Markdown Editor & Live Preview
-- **Split & Full Views:** Switch between split editor/preview, editor-only, and preview-only modes.
-- **GitHub Flavored Markdown (GFM):** Supports tables, task lists (`- [x]`), inline code, fenced code blocks, and blockquotes.
-- **XSS-Safe Sanitization:** Evaluated using `marked` and sanitized with `DOMPurify` to ensure malicious scripts and unsafe tags can never execute.
-- **Live Statistics & Export:** Real-time character count, word count, line count, reading time estimation, copy HTML, and `.md` file export.
+### 4. Documentation Suite
+* **Markdown Preview:** Safe GitHub Flavored Markdown (GFM) editor with live preview supporting tables, task lists (`- [x]`), inline code, fenced code blocks, and blockquotes.
+* **Flexible Layouts:** Switch seamlessly between split editor/preview, editor-only, and preview-only modes.
+* **XSS Sanitization:** Rendered HTML is parsed via `marked` and sanitized with `DOMPurify` to ensure arbitrary script injections cannot execute.
+* **Live Metrics & Export:** Real-time character, word, and line counters, estimated reading time, copy rendered HTML, and direct `.md` file download.
 
-### 5. Native Desktop IDE Interface
-- **Restrained Aesthetics:** Compact toolbars, monospace typography (JetBrains Mono & Inter), subtle IDE borders, and custom low-friction scrollbars.
-- **Command Palette (`Ctrl+K` or `⌘K`):** Keyboard-accessible modal with instant fuzzy search across all tools, descriptions, and tags.
-- **Favorites & Recents:** Pin frequently used tools and browse recent history; persisted safely in `localStorage`.
-- **Theme Switcher:** Seamlessly toggle between dark mode, light mode, or system OS preference.
+### 5. Desktop IDE Interface & Ergonomics
+* **Command Palette (`Ctrl+K` or `⌘K`):** Global keyboard shortcut opening a searchable modal with instant fuzzy search across all tools, descriptions, and tags.
+* **Favorites & Recent Tools:** Pin frequently used tools to the navigation bar and access your recent tool history.
+* **Theme Support:** Switch between Dark mode (default), Light mode, and OS System preference.
+* **Responsive Layout:** Desktop sidebar navigation with an accessible mobile drawer for smaller screens.
 
 ---
 
-## 🔒 Privacy & Security Guarantees
+## 🔒 Privacy, Security & Storage Model
 
-| Guarantee | How DevKit Forge Enforces It |
+DevKit Forge enforces a strict local-first model verified directly against the source code:
+
+| Dimension | Architectural Behavior | Verified Source |
+| :--- | :--- | :--- |
+| **Network Requests** | **Zero outbound requests.** The app issues zero `fetch()`, `XMLHttpRequest`, or `sendBeacon` calls. No backend servers, relays, or API proxies exist. | `src/` tree analysis |
+| **Telemetry & Trackers** | **Zero trackers.** No Google Analytics, telemetry packages, marketing tags, or tracking cookies are included. | `package.json`, `index.html` |
+| **Font & Asset Privacy** | **Local system fonts only.** Typography resolves via native system stacks (`ui-monospace`, `monospace`, system sans-serif); no Google Fonts or external CDNs are contacted at runtime. | `tailwind.config.js` |
+| **Persistent Storage** | **UI preferences only.** `localStorage` is used exclusively for three non-sensitive UI settings: `devkit_forge_favorites` (pinned IDs), `devkit_forge_recents` (last 8 IDs), and `devkit_forge_theme` (`dark`, `light`, `system`). | `src/utils/storage.ts` |
+| **Data Retention** | **Zero disk persistence.** User payloads, tokens, code snippets, and JSON data are kept strictly in ephemeral React state in memory. Closing or refreshing the browser tab completely clears all input data. | `src/components/tools/*` |
+| **Execution Sandboxing** | **Web Worker isolation.** Regex evaluations execute in a separate worker thread terminated automatically after 500 ms to prevent UI freezes. | `src/workers/regex.worker.ts` |
+| **XSS Protection** | **Sanitized HTML.** Live Markdown rendering is filtered through `DOMPurify` before DOM insertion. | `src/components/tools/MarkdownPreview.tsx` |
+
+---
+
+## 📸 Screenshots
+
+<!-- 
+Maintainers / Contributors:
+To capture official screenshots:
+1. Open the live site (or run locally: `npm run dev`) in a 1280x800 browser viewport.
+2. Capture the following four screens:
+   - Dashboard: docs/screenshots/dashboard.png
+   - JSON Diff: docs/screenshots/json-diff.png
+   - Regex Tester: docs/screenshots/regex-tester.png
+   - Markdown Preview: docs/screenshots/markdown-preview.png
+3. Save png images to `docs/screenshots/` and uncomment the markdown image links below.
+-->
+
+| View | Description |
 | :--- | :--- |
-| **Zero Server Uploads** | All computations run in client-side JavaScript memory. No backend API calls exist. |
-| **Zero Tracking** | No telemetry libraries, Google Analytics, or third-party cookies are loaded. Fonts use local system stacks; the app does not fetch web fonts at runtime. |
-| **XSS Immunity** | Live HTML renders are sanitized via `DOMPurify` before DOM insertion. |
-| **Local Storage Only** | Pinned favorites and themes remain on your device in standard `localStorage`. |
+| **Tool Dashboard** | IDE sidebar, category filters, quick action cards, and keyboard shortcut indicators |
+| **JSON Suite** | Multi-mode formatter, minifier, RFC 8259 validator, and deep structural comparison |
+| **Regex Tester** | Worker-isolated regex evaluation with real-time match badges and syntax error diagnostics |
+| **Markdown Preview** | Split-pane GFM editor with live metrics, XSS sanitization, and export actions |
+
+*(Screenshots will be included in the repository assets under `docs/screenshots/` once generated in a standard desktop display environment.)*
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Core Framework** | [React 18.3](https://react.dev/), [TypeScript 5.7](https://www.typescriptlang.org/) |
+| **Build & Dev Tooling** | [Vite 6.0](https://vitejs.dev/) |
+| **Styling & Icons** | [Tailwind CSS 3.4](https://tailwindcss.com/), [PostCSS](https://postcss.org/), [Lucide React 0.468](https://lucide.dev/) |
+| **Parsing & Sanitization** | [Marked 15.0](https://marked.js.org/) (GFM parser), [DOMPurify 3.2](https://github.com/cure53/DOMPurify) (XSS defense) |
+| **Testing & Quality** | [Vitest 2.1](https://vitest.dev/), [@testing-library/react 16.1](https://testing-library.com/), [JSDOM 25.0](https://github.com/jsdom/jsdom), [ESLint 9.17](https://eslint.org/) |
+| **Deployment** | [GitHub Actions](https://github.com/features/actions), [GitHub Pages](https://pages.github.com/) |
 
 ---
 
 ## 🚀 Getting Started Locally
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) v20 or higher
-- [npm](https://www.npmjs.com/) v10 or higher
+* [Node.js](https://nodejs.org/) `20.x` or higher
+* [npm](https://www.npmjs.com/) `10.x` or higher
 
-### Installation & Run
+### Installation & Local Development
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/impreseo/devkit-forge.git
-cd devkit-forge
+# 1. Clone the repository
+git clone https://github.com/impreseo/DevKit-Forge.git
+cd DevKit-Forge
 
-# 2. Install dependencies
-npm install
+# 2. Install dependencies cleanly from package-lock.json
+npm ci
 
-# 3. Start local development server
+# 3. Start local Vite development server
 npm run dev
 ```
 
-Visit `http://localhost:5173` to explore the workspace.
+Open your browser to `http://localhost:5173` to explore the workspace.
 
 ---
 
-## 🧪 Testing, Linting & Typechecking
+## 🧪 Available Scripts
 
-DevKit Forge maintains high code quality with automated test suites:
+All scripts match the definitions in `package.json`:
 
-```bash
-# Run unit & integration tests with Vitest
-npm run test
-
-# Run tests in watch mode during development
-npm run test:watch
-
-# Run TypeScript strict type verification
-npm run typecheck
-
-# Run ESLint (Flat Config)
-npm run lint
-
-# Compile production bundle
-npm run build
-```
+| Script | Command | Purpose |
+| :--- | :--- | :--- |
+| **`npm run dev`** | `vite` | Starts the Vite development server with Hot Module Replacement (HMR). |
+| **`npm run build`** | `tsc && vite build` | Runs the TypeScript compiler and builds the production bundle into `dist/`. |
+| **`npm run preview`** | `vite preview` | Serves the production build locally for pre-deployment inspection. |
+| **`npm run test`** | `vitest run` | Executes all Vitest unit and integration test suites once. |
+| **`npm run test:watch`**| `vitest` | Runs Vitest in interactive watch mode for test-driven development. |
+| **`npm run lint`** | `eslint . --max-warnings 0` | Lints all source and test files using ESLint Flat Config. |
+| **`npm run typecheck`** | `tsc --noEmit` | Validates TypeScript types across the entire project without emitting output. |
 
 ---
 
-## 🌐 Deployment Guide
+## 🌐 Deployment
 
-Because DevKit Forge operates 100% in the browser, the production output in `dist/` consists of static HTML, CSS, and JavaScript.
+Because DevKit Forge produces a 100% client-side static bundle, it can be hosted on any static web hosting provider:
 
-### 1. GitHub Pages Deployment (automated)
+### GitHub Pages (Automated via GitHub Actions)
+The repository includes [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml). On every push to `main`, GitHub Actions:
+1. Runs `npm ci`, `npm run typecheck`, `npm run lint`, and `npm run test`.
+2. Builds the production bundle with `VITE_BASE_PATH: '/DevKit-Forge/'`.
+3. Deploys the static `dist/` directory directly to GitHub Pages.
 
-A workflow at `.github/workflows/deploy-pages.yml` runs the typecheck, lint, tests, and production build on every push to `main`, then deploys `dist/` to GitHub Pages if every check passes.
+To verify GitHub Pages configuration:
+* Ensure **Settings → Pages → Source** is set to **GitHub Actions**.
 
-To enable it:
-
-1. Push this repository to GitHub and ensure the default branch is named `main`.
-2. Open **Settings → Pages** in the repository.
-3. Under **Build and deployment**, choose **GitHub Actions** as the source.
-4. Open the **Actions** tab and watch the **Deploy DevKit Forge to GitHub Pages** workflow.
-5. After a successful deployment, open the URL shown by the `deploy` job. For a repository named `devkit-forge`, the URL is typically `https://<username>.github.io/devkit-forge/`.
-
-The workflow builds with `VITE_BASE_PATH` set to the repository subpath. If you rename the repository, the workflow uses the new repository name automatically. The deployment URL is not live until you push the files and enable GitHub Pages in repository settings.
-
-### 2. Static Hosts (Vercel, Netlify, Cloudflare Pages)
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Root directory:** `./`
-- **Environment variable:** leave `VITE_BASE_PATH` unset for the default relative asset paths, unless your host requires a specific subpath.
-
-### 2. Static Hosts (Vercel, Netlify, Cloudflare Pages)
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Root directory:** `./`
+### Other Static Hosting Platforms
+To deploy to platforms like Cloudflare Pages, Vercel, or Netlify:
+* **Build command:** `npm run build`
+* **Output directory:** `dist`
+* **Root directory:** `./`
+* **Environment variables:** Leave `VITE_BASE_PATH` unset (defaults to relative root `'./'`) unless your host serves the app from a custom subpath.
 
 ---
 
-## 🧩 Adding a New Tool
+## 🤝 Contributing
 
-DevKit Forge has a **modular registry**. To add a tool:
+We welcome community contributions, including new browser-native developer tools, UI polish, performance improvements, and documentation enhancements.
 
-1. Create your component in `src/components/tools/MyTool.tsx`.
-2. Add pure utility functions in `src/utils/myToolUtils.ts` and automated tests in `src/test/myToolUtils.test.ts`.
-3. Register the tool in `src/registry/tools.ts`:
-   ```typescript
-   {
-     id: 'my-tool',
-     title: 'My Tool Title',
-     shortDescription: 'Clear summary of the tool.',
-     category: 'json', // 'json' | 'regex' | 'git' | 'documentation'
-     tags: ['tag1', 'tag2'],
-     icon: MyLucideIcon,
-     component: MyTool,
-   }
+1. Review [CONTRIBUTING.md](CONTRIBUTING.md) for architectural guidelines and a guide on adding a tool to the modular registry.
+2. Adhere to the [Code of Conduct](CODE_OF_CONDUCT.md).
+3. Ensure all validation checks pass before opening a Pull Request:
+   ```bash
+   npm run typecheck && npm run lint && npm run test && npm run build
    ```
-4. Verify with `npm run test` and `npm run typecheck`.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
-## 📄 License
+## 📌 Project Status
 
-DevKit Forge is open source software licensed under the [MIT License](LICENSE).
+**Current Version:** `1.0.0` (Initial Release)  
+DevKit Forge is actively maintained. Its core foundation and initial 7 utilities are stable and tested. Upcoming tools and milestone tracking are documented in [ROADMAP.md](ROADMAP.md).
+
+---
+
+## 📄 License & Governance
+
+* **License:** [MIT License](LICENSE) © 2026 DevKit Forge Contributors.
+* **Security Policy:** [SECURITY.md](SECURITY.md) — instructions for responsible vulnerability disclosure.
+* **Code of Conduct:** [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — Contributor Covenant standards.
+* **Roadmap:** [ROADMAP.md](ROADMAP.md) — planned features and future vision.
+* **Issue Tracker:** [GitHub Issues](https://github.com/impreseo/DevKit-Forge/issues) — bug reports and tool proposals.

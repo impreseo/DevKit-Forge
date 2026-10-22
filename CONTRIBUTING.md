@@ -22,9 +22,9 @@ Every contribution must honor our core design and security principles:
 
 ### 2. Install Dependencies
 ```bash
-git clone https://github.com/impreseo/devkit-forge.git
-cd devkit-forge
-npm install
+git clone https://github.com/impreseo/DevKit-Forge.git
+cd DevKit-Forge
+npm ci
 ```
 
 ### 3. Start Local Development Server
@@ -132,3 +132,10 @@ npm run build
 2. Commit clear, descriptive changes.
 3. Ensure all tests and linting pass (`npm run typecheck && npm run lint && npm run test && npm run build`).
 4. Submit a Pull Request referencing any relevant issue.
+
+---
+
+## Code of Conduct
+
+All contributors and participants are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md). Please report any violations or concerns via the repository issue tracker.
+
