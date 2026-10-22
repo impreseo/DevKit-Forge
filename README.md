@@ -27,6 +27,20 @@ Web-based developer utility sites are frequently overloaded with third-party tra
 
 ---
 
+## 📸 Application Preview
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="DevKit Forge Workspace Dashboard" width="100%" />
+</p>
+
+| Tool | Genuine Application Preview |
+| :--- | :--- |
+| **JSON Structural Comparison**<br>Deep key-by-key path comparison showing added, removed, and modified properties with color-coded status badges and swap controls. | ![DevKit Forge JSON Comparison](docs/screenshots/json-diff.png) |
+| **Regex Tester & Inspector**<br>Worker-isolated evaluation with alternating match highlight badges, flags selector, and match index spans. | ![DevKit Forge Regex Tester](docs/screenshots/regex-tester.png) |
+| **Safe Markdown Preview**<br>Split-pane GitHub Flavored Markdown editor with DOMPurify sanitization, document metrics, and export controls. | ![DevKit Forge Markdown Preview](docs/screenshots/markdown-preview.png) |
+
+---
+
 ## ✨ Implemented Tools & Features
 
 DevKit Forge currently includes **7 focused developer utilities**, organized into modular suites with a desktop IDE interface:
@@ -79,30 +93,7 @@ DevKit Forge enforces a strict local-first model verified directly against the s
 
 ---
 
-## 📸 Screenshots
 
-<!-- 
-Maintainers / Contributors:
-To capture official screenshots:
-1. Open the live site (or run locally: `npm run dev`) in a 1280x800 browser viewport.
-2. Capture the following four screens:
-   - Dashboard: docs/screenshots/dashboard.png
-   - JSON Diff: docs/screenshots/json-diff.png
-   - Regex Tester: docs/screenshots/regex-tester.png
-   - Markdown Preview: docs/screenshots/markdown-preview.png
-3. Save png images to `docs/screenshots/` and uncomment the markdown image links below.
--->
-
-| View | Description |
-| :--- | :--- |
-| **Tool Dashboard** | IDE sidebar, category filters, quick action cards, and keyboard shortcut indicators |
-| **JSON Suite** | Multi-mode formatter, minifier, RFC 8259 validator, and deep structural comparison |
-| **Regex Tester** | Worker-isolated regex evaluation with real-time match badges and syntax error diagnostics |
-| **Markdown Preview** | Split-pane GFM editor with live metrics, XSS sanitization, and export actions |
-
-*(Screenshots will be included in the repository assets under `docs/screenshots/` once generated in a standard desktop display environment.)*
-
----
 
 ## 🛠️ Technology Stack
 
