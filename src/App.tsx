@@ -114,6 +114,7 @@ export const App: React.FC = () => {
                 onClick={() => setIsSidebarOpenMobile(true)}
                 className="lg:hidden p-1 mr-1 rounded border border-ide-border-light dark:border-ide-border bg-ide-panel-light dark:bg-ide-panel text-ide-text-light dark:text-ide-text"
                 title="Toggle Sidebar Navigation"
+                aria-label="Toggle Sidebar Navigation"
               >
                 <Menu className="w-4 h-4" />
               </button>

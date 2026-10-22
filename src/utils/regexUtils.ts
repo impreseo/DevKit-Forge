@@ -70,7 +70,14 @@ export const COMMON_REGEX_PRESETS: RegexPreset[] = [
 /**
  * Friendly syntax error diagnostics for broken regular expressions.
  */
-export function diagnoseRegexError(pattern: string, rawError: string): string {
+export function diagnoseRegexError(pattern: string, rawError: string, flags = ''): string {
+  if (
+    rawError.includes('uv') ||
+    rawError.includes('vu') ||
+    (rawError.includes('Invalid flags') && flags.includes('u') && flags.includes('v'))
+  ) {
+    return "The 'u' (Unicode) and 'v' (UnicodeSets) flags are mutually exclusive and cannot be used together in JavaScript RegExp. Deselect one of them.";
+  }
   if (rawError.includes('Unterminated group') || rawError.includes('unmatched') || rawError.includes('parenthesis')) {
     const openParens = (pattern.match(/\(/g) || []).length;
     const closeParens = (pattern.match(/\)/g) || []).length;
@@ -125,7 +132,7 @@ export function executeRegex(
     const rawMsg = err instanceof Error ? err.message : String(err);
     return {
       isValid: false,
-      error: diagnoseRegexError(pattern, rawMsg),
+      error: diagnoseRegexError(pattern, rawMsg, flags),
       matches: [],
       executionTimeMs: performance.now() - startTime,
     };

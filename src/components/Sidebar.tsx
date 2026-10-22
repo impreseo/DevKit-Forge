@@ -117,6 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         }}
                         className="opacity-0 group-hover:opacity-100 text-amber-500 hover:text-amber-400 transition-opacity"
                         title="Unpin favorite"
+                        aria-label={`Unpin ${tool.title} from favorites`}
                       >
                         <Star className="w-3 h-3 fill-amber-500" />
                       </button>
@@ -194,6 +195,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         isFav ? 'opacity-100 text-amber-500' : 'opacity-0 group-hover:opacity-100'
                       }`}
                       title={isFav ? 'Remove from favorites' : 'Pin to favorites'}
+                      aria-label={isFav ? `Remove ${tool.title} from favorites` : `Pin ${tool.title} to favorites`}
                     >
                       <Star className={`w-3 h-3 ${isFav ? 'fill-amber-500' : ''}`} />
                     </button>

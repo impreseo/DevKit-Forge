@@ -136,6 +136,8 @@ export const MarkdownPreview: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('split')}
+              aria-label="Split View"
+              aria-pressed={viewMode === 'split'}
               className={`px-2 py-1 rounded flex items-center gap-1 transition-colors ${
                 viewMode === 'split'
                   ? 'bg-sky-500 text-white font-medium'
@@ -149,6 +151,8 @@ export const MarkdownPreview: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('editor')}
+              aria-label="Editor Only"
+              aria-pressed={viewMode === 'editor'}
               className={`px-2 py-1 rounded flex items-center gap-1 transition-colors ${
                 viewMode === 'editor'
                   ? 'bg-sky-500 text-white font-medium'
@@ -162,6 +166,8 @@ export const MarkdownPreview: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('preview')}
+              aria-label="Preview Only"
+              aria-pressed={viewMode === 'preview'}
               className={`px-2 py-1 rounded flex items-center gap-1 transition-colors ${
                 viewMode === 'preview'
                   ? 'bg-sky-500 text-white font-medium'
@@ -218,8 +224,8 @@ export const MarkdownPreview: React.FC = () => {
 
       {/* Templates & Quick Metrics Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded border border-ide-border-light dark:border-ide-border bg-ide-panel-light dark:bg-ide-panel text-xs">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-3.5 h-3.5 text-sky-500" />
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <BookOpen className="w-3.5 h-3.5 text-sky-500 shrink-0" />
           <span className="text-ide-text-muted font-medium">Templates:</span>
           {TEMPLATES.map((tmpl) => (
             <button
@@ -233,7 +239,7 @@ export const MarkdownPreview: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-3 font-mono text-[11px] text-ide-text-muted">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[10px] sm:text-[11px] text-ide-text-muted">
           <span>{stats.words} words</span>
           <span>{stats.chars} chars</span>
           <span>{stats.lines} lines</span>
@@ -246,7 +252,7 @@ export const MarkdownPreview: React.FC = () => {
         {/* Markdown Source Editor */}
         {(viewMode === 'split' || viewMode === 'editor') && (
           <div
-            className={`flex flex-col h-[560px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden ${
+            className={`flex flex-col h-[380px] sm:h-[480px] lg:h-[560px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden ${
               viewMode === 'editor' ? 'lg:col-span-2' : ''
             }`}
           >
@@ -268,7 +274,7 @@ export const MarkdownPreview: React.FC = () => {
         {/* Live Sanitized Preview */}
         {(viewMode === 'split' || viewMode === 'preview') && (
           <div
-            className={`flex flex-col h-[560px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden ${
+            className={`flex flex-col h-[380px] sm:h-[480px] lg:h-[560px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden ${
               viewMode === 'preview' ? 'lg:col-span-2' : ''
             }`}
           >

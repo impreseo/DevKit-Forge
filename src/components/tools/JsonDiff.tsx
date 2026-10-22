@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { compareJson, formatJson } from '../../utils/jsonUtils';
-import { GitCompare, ArrowLeftRight, Wand2, RefreshCw, AlertCircle, Plus, Minus, Edit3 } from 'lucide-react';
+import { compareJson, formatJson, isLargeJson, hasUnsafeInteger } from '../../utils/jsonUtils';
+import { GitCompare, ArrowLeftRight, Wand2, RefreshCw, AlertCircle, AlertTriangle, Plus, Minus, Edit3 } from 'lucide-react';
 
 const SAMPLE_LEFT = `{
   "appName": "DevKit Forge",
@@ -109,6 +109,14 @@ export const JsonDiff: React.FC = () => {
         </div>
       </div>
 
+      {/* Warnings & Callouts */}
+      {(isLargeJson(leftJson) || isLargeJson(rightJson)) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Large document detected (&gt;5 MB). Client-side comparison runs in-browser and may briefly affect responsiveness.</span>
+        </div>
+      )}
+
       {/* Errors if either JSON is invalid */}
       {(leftError || rightError) && (
         <div className="space-y-2">
@@ -127,14 +135,22 @@ export const JsonDiff: React.FC = () => {
         </div>
       )}
 
+      {/* Unsafe Integer Precision Notice */}
+      {!leftError && !rightError && (hasUnsafeInteger(leftJson) || hasUnsafeInteger(rightJson)) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-sky-500" />
+          <span>Notice: Large numbers exceeding JavaScript&apos;s safe integer limit (&gt;2^53 - 1) detected. Values above 9,007,199,254,740,991 may experience IEEE 754 precision loss during browser formatting.</span>
+        </div>
+      )}
+
       {/* Diff Metrics Bar */}
       {!leftError && !rightError && (
-        <div className="flex flex-wrap items-center justify-between p-2.5 rounded border border-ide-border-light dark:border-ide-border bg-ide-panel-light dark:bg-ide-panel text-xs">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded border border-ide-border-light dark:border-ide-border bg-ide-panel-light dark:bg-ide-panel text-xs">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="font-medium text-ide-text-light dark:text-ide-text">
               {hasDiffs ? 'Differences Found' : 'No Differences — Objects are identical'}
             </span>
-            <div className="flex items-center gap-2 font-mono text-[11px]">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                 <Plus className="w-3 h-3" /> {addedCount} added
               </span>
@@ -199,13 +215,13 @@ export const JsonDiff: React.FC = () => {
 
                 <div className="flex items-center gap-2 text-right">
                   {diff.type !== 'added' && (
-                    <span className="line-through text-rose-600/80 dark:text-rose-400/80 max-w-xs truncate">
+                    <span className="line-through text-rose-600/80 dark:text-rose-400/80 max-w-[120px] sm:max-w-xs truncate">
                       {JSON.stringify(diff.oldValue)}
                     </span>
                   )}
                   {diff.type === 'modified' && <span className="text-ide-text-muted">➔</span>}
                   {diff.type !== 'removed' && (
-                    <span className="text-emerald-600 dark:text-emerald-400 max-w-xs truncate font-medium">
+                    <span className="text-emerald-600 dark:text-emerald-400 max-w-[120px] sm:max-w-xs truncate font-medium">
                       {JSON.stringify(diff.newValue)}
                     </span>
                   )}
@@ -219,7 +235,7 @@ export const JsonDiff: React.FC = () => {
       {/* Editor Inputs (Left and Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left Document */}
-        <div className="flex flex-col h-[400px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[320px] sm:h-[380px] lg:h-[400px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <span className="font-medium">Original Document (Left)</span>
             <span className="font-mono text-[11px]">{leftJson ? `${leftJson.length} chars` : '0'}</span>
@@ -234,7 +250,7 @@ export const JsonDiff: React.FC = () => {
         </div>
 
         {/* Right Document */}
-        <div className="flex flex-col h-[400px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[320px] sm:h-[380px] lg:h-[400px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <span className="font-medium">Modified Document (Right)</span>
             <span className="font-mono text-[11px]">{rightJson ? `${rightJson.length} chars` : '0'}</span>

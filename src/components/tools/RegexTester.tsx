@@ -8,6 +8,7 @@ const FLAGS_LIST = [
   { flag: 'm', label: 'Multiline', desc: '^ and $ match the start/end of each line' },
   { flag: 's', label: 'DotAll', desc: '. matches any character including newline \\n' },
   { flag: 'u', label: 'Unicode', desc: 'Treat pattern as a sequence of Unicode code points' },
+  { flag: 'v', label: 'Unicode Sets', desc: 'Extended Unicode set notation (difference, intersection, strings)' },
   { flag: 'y', label: 'Sticky', desc: 'Matches only from the index indicated by lastIndex' },
 ];
 
@@ -23,7 +24,11 @@ export const RegexTester: React.FC = () => {
     if (flags.includes(flagChar)) {
       setFlags(flags.replace(flagChar, ''));
     } else {
-      setFlags(flags + flagChar);
+      // JavaScript RegExp u and v flags are mutually exclusive in ECMAScript
+      let newFlags = flags;
+      if (flagChar === 'v') newFlags = newFlags.replace('u', '');
+      if (flagChar === 'u') newFlags = newFlags.replace('v', '');
+      setFlags(newFlags + flagChar);
     }
   };
 
@@ -200,6 +205,8 @@ export const RegexTester: React.FC = () => {
                   key={flag}
                   type="button"
                   onClick={() => toggleFlag(flag)}
+                  aria-label={`${label} flag (${flag})`}
+                  aria-pressed={active}
                   className={`w-7 h-7 rounded text-xs font-mono font-semibold transition-colors ${
                     active
                       ? 'bg-sky-500 text-white shadow-sm'

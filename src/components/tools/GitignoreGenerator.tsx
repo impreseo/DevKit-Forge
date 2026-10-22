@@ -12,11 +12,14 @@ export const GitignoreGenerator: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
 
   const filteredTemplates = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
     return GITIGNORE_TEMPLATES.filter((template) => {
       const matchesSearch =
-        template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.id.toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        template.name.toLowerCase().includes(q) ||
+        template.description.toLowerCase().includes(q) ||
+        template.id.toLowerCase().includes(q) ||
+        template.content.toLowerCase().includes(q);
       const matchesCategory =
         selectedCategory === 'All' || template.category === selectedCategory;
       return matchesSearch && matchesCategory;
@@ -152,7 +155,8 @@ export const GitignoreGenerator: React.FC = () => {
                     type="button"
                     onClick={() => toggleTemplate(id)}
                     className="hover:text-rose-500 font-bold ml-0.5"
-                    title={`Remove ${t?.name}`}
+                    title={`Remove ${t?.name || id}`}
+                    aria-label={`Remove ${t?.name || id} template`}
                   >
                     ×
                   </button>

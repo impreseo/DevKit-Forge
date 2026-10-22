@@ -353,3 +353,87 @@ export function compareJson(
 
   return { diffs, hasDiffs };
 }
+
+export const LARGE_JSON_SIZE_THRESHOLD_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/**
+ * Returns the UTF-8 byte length of a string.
+ * Uses Blob size or TextEncoder when available, with a fast fallback.
+ */
+export function getUtf8ByteLength(text: string): number {
+  if (typeof Blob !== 'undefined') {
+    return new Blob([text]).size;
+  }
+  if (typeof TextEncoder !== 'undefined') {
+    return new TextEncoder().encode(text).length;
+  }
+  let bytes = 0;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code < 0x80) {
+      bytes += 1;
+    } else if (code < 0x800) {
+      bytes += 2;
+    } else if (code >= 0xd800 && code <= 0xdbff) {
+      bytes += 4;
+      i++; // skip low surrogate
+    } else {
+      bytes += 3;
+    }
+  }
+  return bytes;
+}
+
+/**
+ * Check whether a JSON string exceeds the 5 MB UTF-8 byte threshold.
+ * Uses fast-path bounds checks to avoid byte calculations for inputs that are
+ * definitely below (~1.74 MB code units) or definitely above (5 MB code units) the threshold.
+ */
+export function isLargeJson(text: string): boolean {
+  if (!text) return false;
+  // Fast path 1: In UTF-8, each UTF-16 code unit produces at least 1 byte.
+  // Therefore, if string length exceeds 5 MB code units, UTF-8 byte size is guaranteed >= 5 MB.
+  if (text.length > LARGE_JSON_SIZE_THRESHOLD_BYTES) {
+    return true;
+  }
+  // Fast path 2: In UTF-8, each UTF-16 code unit produces at most 3 bytes
+  // (surrogate pairs of 2 code units produce 4 bytes = 2 bytes/unit; BMP code units produce <= 3 bytes).
+  // If text.length * 3 <= threshold, byte size cannot exceed threshold.
+  if (text.length * 3 <= LARGE_JSON_SIZE_THRESHOLD_BYTES) {
+    return false;
+  }
+  // Middle range: Calculate exact UTF-8 byte length.
+  return getUtf8ByteLength(text) > LARGE_JSON_SIZE_THRESHOLD_BYTES;
+}
+
+/**
+ * Detect numeric literals in a JSON string that exceed JavaScript's safe integer range
+ * (Number.MIN_SAFE_INTEGER to Number.MAX_SAFE_INTEGER: ±9,007,199,254,740,991).
+ * Standard JSON.parse parses numbers into IEEE 754 64-bit floats, which lose precision
+ * for integers outside this range.
+ */
+export function hasUnsafeInteger(jsonStr: string): boolean {
+  if (!jsonStr || jsonStr.length < 16) return false;
+  // Strip string literals (accounting for escaped quotes and backslashes)
+  // to avoid false positives inside string values.
+  const withoutStrings = jsonStr.replace(/"(?:\\.|[^"\\])*"/g, '""');
+
+  // Match standalone integer literals:
+  // Must be preceded by start-of-input, whitespace, or JSON delimiters ([, :, ,)
+  // and followed by whitespace, JSON delimiters (], }, ,), or end-of-input.
+  // This explicitly excludes decimal fractions (e.g. 1.9007199254740995 or 9007199254740995.123)
+  // and exponential notation (e.g. 9007199254740995e2 or 1e9007199254740995).
+  const intRegex = /(?:^|[[:,\s])\s*(-?\d{16,})(?=[\]},\s]|$)/g;
+  let match: RegExpExecArray | null;
+  while ((match = intRegex.exec(withoutStrings)) !== null) {
+    try {
+      const val = BigInt(match[1]);
+      if (val > BigInt(Number.MAX_SAFE_INTEGER) || val < BigInt(Number.MIN_SAFE_INTEGER)) {
+        return true;
+      }
+    } catch {
+      // Ignore unparseable values
+    }
+  }
+  return false;
+}

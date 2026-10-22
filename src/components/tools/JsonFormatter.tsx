@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { formatJson } from '../../utils/jsonUtils';
-import { Copy, Check, Trash2, ArrowDownAZ, FileCode, AlertCircle, RefreshCw } from 'lucide-react';
+import { formatJson, isLargeJson, hasUnsafeInteger } from '../../utils/jsonUtils';
+import { Copy, Check, Trash2, ArrowDownAZ, FileCode, AlertCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const SAMPLE_JSON = `{
   "projectName": "DevKit Forge",
@@ -127,6 +127,14 @@ export const JsonFormatter: React.FC = () => {
         </div>
       </div>
 
+      {/* Large Document Warning */}
+      {isLargeJson(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Large document detected (&gt;5 MB). Client-side formatting runs in-browser and may briefly affect responsiveness.</span>
+        </div>
+      )}
+
       {/* Error Callout if any */}
       {error && (
         <div className="flex items-start gap-2.5 p-3 rounded bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-mono">
@@ -137,10 +145,18 @@ export const JsonFormatter: React.FC = () => {
         </div>
       )}
 
+      {/* Unsafe Integer Precision Notice */}
+      {!error && hasUnsafeInteger(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-sky-500" />
+          <span>Notice: Large numbers exceeding JavaScript&apos;s safe integer limit (&gt;2^53 - 1) detected. Values above 9,007,199,254,740,991 may experience IEEE 754 precision loss during browser formatting.</span>
+        </div>
+      )}
+
       {/* Editor Split View */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Input Column */}
-        <div className="flex flex-col h-[520px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[360px] sm:h-[460px] lg:h-[520px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <span className="font-medium">Raw Input JSON</span>
             <span className="font-mono text-[11px]">{input ? `${input.length} chars` : 'Empty'}</span>
@@ -156,7 +172,7 @@ export const JsonFormatter: React.FC = () => {
         </div>
 
         {/* Output Column */}
-        <div className="flex flex-col h-[520px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[360px] sm:h-[460px] lg:h-[520px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <span className="font-medium">Formatted Output</span>
             <span className="font-mono text-[11px]">{output ? `${output.split('\n').length} lines` : '0 lines'}</span>

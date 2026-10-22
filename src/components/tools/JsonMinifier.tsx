@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { minifyJson } from '../../utils/jsonUtils';
-import { Minimize2, Copy, Check, Trash2, RefreshCw, AlertCircle, ArrowRight } from 'lucide-react';
+import { minifyJson, isLargeJson, hasUnsafeInteger } from '../../utils/jsonUtils';
+import { Minimize2, Copy, Check, Trash2, RefreshCw, AlertCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 
 const SAMPLE_JSON = `{
   "compilerOptions": {
@@ -117,6 +117,24 @@ export const JsonMinifier: React.FC = () => {
         </div>
       )}
 
+      {/* Large Document Warning */}
+      {isLargeJson(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Large document detected (&gt;5 MB). Client-side minification runs on the main thread and may briefly affect responsiveness.</span>
+        </div>
+      )}
+
+      {/* Precision Loss Warning for Unsafe Integers */}
+      {!error && hasUnsafeInteger(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>
+            <strong>Precision Warning:</strong> One or more numbers exceed JavaScript's safe integer range (±9,007,199,254,740,991). Standard minification parsing may alter their lowest digits.
+          </span>
+        </div>
+      )}
+
       {/* Error Callout */}
       {error && (
         <div className="flex items-start gap-2.5 p-3 rounded bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-mono">
@@ -130,7 +148,7 @@ export const JsonMinifier: React.FC = () => {
       {/* Split Views */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Input Column */}
-        <div className="flex flex-col h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[360px] sm:h-[440px] lg:h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <span className="font-medium">Formatted / Pretty JSON Input</span>
             <span className="font-mono text-[11px]">{originalBytes} B</span>
@@ -146,7 +164,7 @@ export const JsonMinifier: React.FC = () => {
         </div>
 
         {/* Output Column */}
-        <div className="flex flex-col h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+        <div className="flex flex-col h-[360px] sm:h-[440px] lg:h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
             <div className="flex items-center gap-1.5 font-medium">
               <span>Single-Line Minified Result</span>

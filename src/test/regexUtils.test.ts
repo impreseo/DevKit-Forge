@@ -67,6 +67,20 @@ describe('Regex Utilities', () => {
       expect(result.matches[0].fullMatch).toBe('1024');
     });
 
+    it('executes patterns using modern v (UnicodeSets) flag', () => {
+      // Intersection notation supported only under v flag
+      const result = executeRegex('[\\p{ASCII}&&\\p{Letter}]+', 'v', 'hello 123 WORLD');
+      expect(result.isValid).toBe(true);
+      expect(result.matches.length).toBe(1); // non-global
+      expect(result.matches[0].fullMatch).toBe('hello');
+    });
+
+    it('rejects conflicting u and v flag combinations with clear diagnosis', () => {
+      const result = executeRegex('abc', 'uv', 'abc');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('mutually exclusive');
+    });
+
     it('safely catches syntax errors and provides friendly diagnostic', () => {
       const brokenPattern = '(unclosed group';
       const result = executeRegex(brokenPattern, 'g', 'sample text');
@@ -91,6 +105,11 @@ describe('Regex Utilities', () => {
     it('provides clear explanation for unclosed bracket', () => {
       const diagnosis = diagnoseRegexError('[a-z', 'Unterminated character class');
       expect(diagnosis).toContain('character class');
+    });
+
+    it('explains mutual exclusivity when u and v flags are both passed', () => {
+      const diagnosis = diagnoseRegexError('abc', 'Invalid flags supplied to RegExp constructor', 'uv');
+      expect(diagnosis).toContain('mutually exclusive');
     });
   });
 

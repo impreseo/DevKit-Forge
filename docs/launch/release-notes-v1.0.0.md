@@ -18,7 +18,7 @@
 
 ### 2. Regular Expression Suite
 * **Regex Tester:** Live pattern evaluator with alternating match highlight badges directly over the test text.
-* **Full Flag Controls:** Toggle `g`, `i`, `m`, `s`, `u`, and `y` flags.
+* **Full Flag Controls:** Toggle `g`, `i`, `m`, `s`, `u`, `v`, and `y` flags (with automatic mutual exclusion between `u` and `v`).
 * **Match Inspector:** Inspects character spans, lengths, and named/numbered capture groups.
 * **Worker-Isolated Execution:** Evaluated inside a dedicated Web Worker with a 500 ms safety timeout to guard against catastrophic backtracking (ReDoS).
 * **Curated Presets:** Ready-to-test patterns for Email, URL, SemVer, IPv4, ISO 8601, Hex colors, and UUID v4.
@@ -65,8 +65,9 @@ npm run dev
 ---
 
 ## ⚠️ Known Limitations
-* Regular expressions run against ECMAScript RegExp standards. Specialized syntax from PCRE or Python `re` (such as recursion or atomic groups without lookaround) follows standard browser engine support.
-* Deep structural diffing of large JSON documents (>15 MB) runs on the main thread; WebAssembly acceleration is planned for v2.0.0.
+* Regular expressions run against ECMAScript RegExp standards. Specialized syntax from PCRE or Python `re` (such as recursion or atomic groups without lookaround) follows standard browser engine support. Modern `v` (UnicodeSets) flag requires a compatible runtime (Node 20+, Chrome 112+, Firefox 116+, Safari 17+).
+* Standard JSON parsing adheres to IEEE 754 64-bit floating point precision. Numerical integer literals outside the safe integer range (±9,007,199,254,740,991) will undergo precision loss when parsed by standard JavaScript `JSON.parse`; DevKit Forge displays proactive precision warnings across all JSON tools when unsafe integer literals are detected.
+* Processing and deep structural diffing of large JSON documents (>5 MB) runs client-side on the main thread and may briefly affect UI responsiveness; WebAssembly and worker-based offloading are planned for v2.0.0.
 
 ---
 

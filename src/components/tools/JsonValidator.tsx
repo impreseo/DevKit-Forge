@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { validateJson } from '../../utils/jsonUtils';
-import { CheckCircle2, AlertOctagon, RefreshCw, Trash2, ShieldCheck, Code, Layers, Hash } from 'lucide-react';
+import { validateJson, isLargeJson, hasUnsafeInteger } from '../../utils/jsonUtils';
+import { CheckCircle2, AlertOctagon, AlertTriangle, RefreshCw, Trash2, ShieldCheck, Code, Layers, Hash } from 'lucide-react';
 
 const VALID_SAMPLE = `{
   "api": "DevKit Forge",
@@ -112,6 +112,22 @@ export const JsonValidator: React.FC = () => {
         </div>
       )}
 
+      {/* Large Document Warning */}
+      {isLargeJson(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Large document detected (&gt;5 MB). Client-side validation runs in-browser and may briefly affect responsiveness.</span>
+        </div>
+      )}
+
+      {/* Unsafe Integer Precision Notice */}
+      {result.isValid && hasUnsafeInteger(input) && (
+        <div className="flex items-center gap-2 p-2.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-sky-500" />
+          <span>Notice: Large numbers exceeding JavaScript&apos;s safe integer limit (&gt;2^53 - 1) detected. Values above 9,007,199,254,740,991 may experience IEEE 754 precision loss during browser formatting.</span>
+        </div>
+      )}
+
       {/* Structural Stats (if valid) */}
       {result.isValid && result.stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -155,7 +171,7 @@ export const JsonValidator: React.FC = () => {
       )}
 
       {/* Editor Area */}
-      <div className="flex flex-col h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
+      <div className="flex flex-col h-[360px] sm:h-[440px] lg:h-[480px] rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden">
         <div className="flex items-center justify-between px-3 py-2 bg-ide-panel-light dark:bg-ide-panel border-b border-ide-border-light dark:border-ide-border text-xs text-ide-text-mutedLight dark:text-ide-text-muted">
           <span className="font-medium">JSON Source Code</span>
           <span className="font-mono text-[11px]">{input ? `${input.length} characters` : '0 characters'}</span>

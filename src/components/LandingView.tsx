@@ -170,6 +170,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                             isFav ? 'text-amber-500 fill-amber-500' : 'hover:text-amber-500'
                           }`}
                           title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+                          aria-label={isFav ? `Remove ${tool.title} from favorites` : `Add ${tool.title} to favorites`}
                         >
                           <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-amber-500' : ''}`} />
                         </button>

@@ -5,6 +5,9 @@ import {
   validateJson,
   compareJson,
   sortObjectKeys,
+  isLargeJson,
+  hasUnsafeInteger,
+  LARGE_JSON_SIZE_THRESHOLD_BYTES,
 } from '../utils/jsonUtils';
 
 describe('JSON Utilities', () => {
@@ -172,6 +175,75 @@ describe('JSON Utilities', () => {
       const sorted = sortObjectKeys(input) as Record<string, unknown>;
       expect(Object.prototype.hasOwnProperty.call(sorted, '__proto__')).toBe(true);
       expect(JSON.stringify(sorted)).toBe('{"__proto__":{"safe":true},"z":1}');
+    });
+  });
+
+  describe('isLargeJson', () => {
+    it('returns false for payloads under 5 MB threshold', () => {
+      expect(isLargeJson('{"small": true}')).toBe(false);
+      const under5Mb = 'a'.repeat(LARGE_JSON_SIZE_THRESHOLD_BYTES);
+      expect(isLargeJson(under5Mb)).toBe(false);
+    });
+
+    it('returns true for payloads exceeding 5 MB threshold', () => {
+      const over5Mb = 'a'.repeat(LARGE_JSON_SIZE_THRESHOLD_BYTES + 1);
+      expect(isLargeJson(over5Mb)).toBe(true);
+    });
+
+    it('accurately measures multi-byte non-ASCII payloads in UTF-8 bytes', () => {
+      // '€' is 3 bytes in UTF-8, but only 1 UTF-16 code unit (character)
+      // 1,800,000 characters of '€' is ~1.8M chars, but 5.4M UTF-8 bytes (>5 MB)
+      const multiByteOver5Mb = '€'.repeat(1_800_000);
+      expect(multiByteOver5Mb.length).toBeLessThan(LARGE_JSON_SIZE_THRESHOLD_BYTES);
+      expect(isLargeJson(multiByteOver5Mb)).toBe(true);
+
+      // 1,000,000 characters of '€' is 3 MB UTF-8 bytes (<5 MB)
+      const multiByteUnder5Mb = '€'.repeat(1_000_000);
+      expect(isLargeJson(multiByteUnder5Mb)).toBe(false);
+    });
+  });
+
+  describe('hasUnsafeInteger', () => {
+    it('returns false for safe integers within JS precision limits', () => {
+      expect(hasUnsafeInteger('{"id": 123456789, "count": 42}')).toBe(false);
+      expect(hasUnsafeInteger(`{"maxSafe": ${Number.MAX_SAFE_INTEGER}}`)).toBe(false);
+      expect(hasUnsafeInteger(`{"minSafe": ${Number.MIN_SAFE_INTEGER}}`)).toBe(false);
+    });
+
+    it('returns true for integers exceeding MAX_SAFE_INTEGER', () => {
+      // 9007199254740992 is MAX_SAFE_INTEGER + 1 (16 digits)
+      expect(hasUnsafeInteger('{"id": 9007199254740992}')).toBe(true);
+      expect(hasUnsafeInteger('{"id": 9007199254740995}')).toBe(true);
+      expect(hasUnsafeInteger('[9007199254740993, 100]')).toBe(true);
+      expect(hasUnsafeInteger('[9007199254740991, 9007199254740995]')).toBe(true);
+    });
+
+    it('returns true for negative integers beyond MIN_SAFE_INTEGER', () => {
+      // -9007199254740992 is MIN_SAFE_INTEGER - 1
+      expect(hasUnsafeInteger('{"id": -9007199254740992}')).toBe(true);
+      expect(hasUnsafeInteger('{"id": -9007199254740995}')).toBe(true);
+      expect(hasUnsafeInteger('[-9007199254740995, -100]')).toBe(true);
+    });
+
+    it('ignores large numeric values that are inside string literals', () => {
+      expect(hasUnsafeInteger('{"snowflake": "9007199254740995"}')).toBe(false);
+      expect(hasUnsafeInteger('{"creditCard": "1234567890123456"}')).toBe(false);
+      // Handles escaped quotes inside string literals
+      expect(hasUnsafeInteger('{"text": "Escaped \\"9007199254740995\\" in string"}')).toBe(false);
+      // Handles escaped backslashes before closing quote
+      expect(hasUnsafeInteger('{"path": "C:\\\\folder\\\\", "id": 123}')).toBe(false);
+    });
+
+    it('does not flag floating point fractions or exponential numbers as unsafe integers', () => {
+      // Fractional part should not match as an integer
+      expect(hasUnsafeInteger('{"float": 1.9007199254740995}')).toBe(false);
+      expect(hasUnsafeInteger('{"float": -0.9007199254740995}')).toBe(false);
+      expect(hasUnsafeInteger('{"float": 9007199254740995.123}')).toBe(false);
+      // Exponents should not be flagged as unsafe integer literals
+      expect(hasUnsafeInteger('{"exp": 9007199254740995e2}')).toBe(false);
+      expect(hasUnsafeInteger('{"exp": 1e9007199254740995}')).toBe(false);
+      expect(hasUnsafeInteger('{"exp": 1e+9007199254740995}')).toBe(false);
+      expect(hasUnsafeInteger('{"exp": 1e-9007199254740995}')).toBe(false);
     });
   });
 });

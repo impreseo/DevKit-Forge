@@ -20,7 +20,7 @@ Initial production launch of **DevKit Forge** — a fast, privacy-focused, brows
   * **JSON Structural Comparison:** Deep key-by-key path comparison detecting added, removed, and modified properties with color-coded status badges, side-by-side review, and swap controls.
 * **Regular Expression Suite:**
   * **Regex Tester:** Live pattern evaluator with alternating match highlight badges directly over the test text.
-  * **Flag Controls:** Support for `g`, `i`, `m`, `s`, `u`, and `y` regex flags.
+  * **Flag Controls:** Support for `g`, `i`, `m`, `s`, `u`, `v`, and `y` regex flags (with mutual exclusion between `u` and `v`).
   * **Match Inspector:** Breakdown of match index spans, match lengths, and named/numbered capture groups.
   * **Web Worker Isolation:** Pattern evaluation executed in a terminable Web Worker with a 500 ms safety timeout to prevent ReDoS UI freezes.
   * **Curated Presets:** Ready-to-test patterns for Email, URL, SemVer, IPv4, ISO 8601, Hex colors, and UUID v4.

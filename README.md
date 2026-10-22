@@ -53,7 +53,7 @@ DevKit Forge currently includes **7 focused developer utilities**, organized int
 
 ### 2. Regular Expression Suite
 * **Regex Tester:** Real-time pattern evaluation against test strings with alternating highlight badges.
-* **Full Flag Support:** Toggle `g` (global), `i` (ignore case), `m` (multiline), `s` (dotAll), `u` (unicode), and `y` (sticky).
+* **Full Flag Support:** Toggle `g` (global), `i` (ignore case), `m` (multiline), `s` (dotAll), `u` (unicode), `v` (unicodeSets), and `y` (sticky).
 * **Match & Capture Group Inspector:** Detailed breakdown of match index spans, match lengths, and named/numbered capture groups.
 * **Worker-Isolated Execution:** Pattern evaluation runs in a dedicated, terminable Web Worker with a 500 ms safety timeout to protect the UI thread from catastrophic backtracking (ReDoS).
 * **Curated Pattern Presets:** Quick-load test patterns for Email, URL, SemVer, IPv4, ISO 8601 timestamps, Hex colors, and UUID v4.
