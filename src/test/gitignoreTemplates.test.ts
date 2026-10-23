@@ -14,6 +14,12 @@ describe('Gitignore Templates & Generator', () => {
     expect(ids).toContain('linux');
     expect(ids).toContain('vscode');
     expect(ids).toContain('jetbrains');
+    expect(ids).toContain('docker');
+    expect(ids).toContain('nextjs');
+    expect(ids).toContain('flutter');
+    expect(ids).toContain('terraform');
+    expect(ids).toContain('gradle');
+    expect(ids).toContain('cpp');
   });
 
   it('generates properly formatted combined output with headers', () => {

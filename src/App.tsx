@@ -17,14 +17,45 @@ import {
 } from './utils/storage';
 import { ChevronRight, Home, Menu, Star } from 'lucide-react';
 
+function parseHashToolId(): string | null {
+  if (typeof window === 'undefined') return null;
+  const raw = window.location.hash.replace(/^#\/?/, '').trim();
+  if (!raw) return null;
+  const tool = getToolById(raw);
+  return tool ? tool.id : null;
+}
+
 export const App: React.FC = () => {
-  const [activeToolId, setActiveToolId] = useState<string | null>(null);
+  const [activeToolId, setActiveToolId] = useState<string | null>(parseHashToolId);
   const [favorites, setFavorites] = useState<string[]>(getStoredFavorites);
   const [recentToolIds, setRecentToolIds] = useState<string[]>(getStoredRecentTools);
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('all');
   const [theme, setTheme] = useState<ThemeMode>(getStoredTheme);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState<boolean>(false);
+
+  // Sync initial route with recent tools if launched directly via deep link
+  useEffect(() => {
+    const initialTool = parseHashToolId();
+    if (initialTool) {
+      const updated = recordRecentTool(initialTool);
+      setRecentToolIds(updated);
+    }
+  }, []);
+
+  // Listen for browser Back/Forward navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const toolId = parseHashToolId();
+      setActiveToolId(toolId);
+      if (toolId) {
+        const updated = recordRecentTool(toolId);
+        setRecentToolIds(updated);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Handle system vs explicit theme
   useEffect(() => {
@@ -62,6 +93,13 @@ export const App: React.FC = () => {
     if (id) {
       const updatedRecents = recordRecentTool(id);
       setRecentToolIds(updatedRecents);
+      if (window.location.hash !== `#/${id}`) {
+        window.location.hash = `#/${id}`;
+      }
+    } else {
+      if (window.location.hash) {
+        history.pushState(null, '', window.location.pathname + window.location.search);
+      }
     }
   };
 

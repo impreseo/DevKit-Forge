@@ -9,6 +9,9 @@ import { JsonDiff } from '../components/tools/JsonDiff';
 import { RegexTester } from '../components/tools/RegexTester';
 import { GitignoreGenerator } from '../components/tools/GitignoreGenerator';
 import { MarkdownPreview } from '../components/tools/MarkdownPreview';
+import { Base64UrlCodec } from '../components/tools/Base64UrlCodec';
+import { HashUuidGenerator } from '../components/tools/HashUuidGenerator';
+import { JwtInspector } from '../components/tools/JwtInspector';
 import { CommandPalette } from '../components/CommandPalette';
 import { App } from '../App';
 import { executeRegex } from '../utils/regexUtils';
@@ -23,6 +26,9 @@ describe('Tool Registry', () => {
       'regex-tester',
       'gitignore-generator',
       'markdown-preview',
+      'base64-url-codec',
+      'hash-uuid-generator',
+      'jwt-inspector',
     ];
 
     const registeredIds = TOOL_REGISTRY.map((t) => t.id);
@@ -577,5 +583,156 @@ describe('App Integration', () => {
     render(<App />);
     expect(screen.getByRole('button', { name: /toggle sidebar navigation/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /toggle visual theme/i })).toBeInTheDocument();
+  });
+});
+
+describe('Base64UrlCodec Component', () => {
+  it('renders default sample and performs Base64 encoding', () => {
+    render(<Base64UrlCodec />);
+    expect(screen.getByRole('heading', { name: /Base64, URL & Hex Encoders/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Input content to encode or decode/i)).toBeInTheDocument();
+  });
+
+  it('switches between Base64, URL Component, and Hex codecs', () => {
+    render(<Base64UrlCodec />);
+    const urlButton = screen.getByRole('button', { name: 'URL Component' });
+    fireEvent.click(urlButton);
+    expect(screen.getByText(/URL Output/i)).toBeInTheDocument();
+
+    const hexButton = screen.getByRole('button', { name: 'Hexadecimal' });
+    fireEvent.click(hexButton);
+    expect(screen.getByText(/HEX Output/i)).toBeInTheDocument();
+  });
+
+  it('swaps input and output', () => {
+    render(<Base64UrlCodec />);
+    const swapButton = screen.getByTitle('Swap input and output values');
+    fireEvent.click(swapButton);
+    expect(screen.getByText(/Decoded Plaintext/i)).toBeInTheDocument();
+  });
+
+  it('displays error message for malformed decode inputs', () => {
+    render(<Base64UrlCodec />);
+    const decodeBtn = screen.getByRole('button', { name: 'decode' });
+    fireEvent.click(decodeBtn);
+    const inputArea = screen.getByLabelText(/Input content to encode or decode/i);
+    fireEvent.change(inputArea, { target: { value: '!!!not-valid-base64!!!' } });
+    expect(screen.getByText(/Decoding Error:/i)).toBeInTheDocument();
+  });
+});
+
+describe('HashUuidGenerator Component', () => {
+  it('renders hash digest and updates algorithm', async () => {
+    render(<HashUuidGenerator />);
+    expect(screen.getByRole('heading', { name: /Hash & UUID Generator/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/SHA-256 Digest/i)).toBeInTheDocument();
+    });
+
+    const sha512Btn = screen.getByRole('button', { name: 'SHA-512' });
+    fireEvent.click(sha512Btn);
+    await waitFor(() => {
+      expect(screen.getByText(/SHA-512 Digest/i)).toBeInTheDocument();
+    });
+  });
+
+  it('switches to UUID Generator tab and regenerates UUIDs', () => {
+    render(<HashUuidGenerator />);
+    const uuidTab = screen.getByRole('button', { name: /UUID v4 Generator/i });
+    fireEvent.click(uuidTab);
+
+    expect(screen.getByText(/Generated Cryptographic UUIDs/i)).toBeInTheDocument();
+    const regenBtn = screen.getByRole('button', { name: /Regenerate/i });
+    fireEvent.click(regenBtn);
+    expect(screen.getByText(/RFC 4122 v4/i)).toBeInTheDocument();
+  });
+
+  it('displays actionable error when Web Crypto hashing fails or is unavailable', async () => {
+    // Temporarily spy on computeHash to simulate an error in insecure context
+    const cryptoModule = await import('../utils/cryptoUtils');
+    const spy = vi.spyOn(cryptoModule, 'computeHash').mockResolvedValueOnce({
+      hash: '',
+      error: 'Web Crypto API (crypto.subtle) is not available in this browser.',
+    });
+
+    render(<HashUuidGenerator />);
+    await waitFor(() => {
+      expect(screen.getByText(/Web Crypto Error:/i)).toBeInTheDocument();
+      expect(screen.getByText(/crypto\.subtle/i)).toBeInTheDocument();
+    });
+
+    spy.mockRestore();
+  });
+});
+
+describe('JwtInspector Component', () => {
+  it('renders with sample token and shows header, payload, and security notice', () => {
+    render(<JwtInspector />);
+    expect(screen.getByRole('heading', { name: /JSON Web Token \(JWT\) Inspector/i })).toBeInTheDocument();
+    expect(screen.getByText(/Security Advisory:/i)).toBeInTheDocument();
+    expect(screen.getByText(/HEADER \(Algorithm & Type\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/PAYLOAD \(Data Claims\)/i)).toBeInTheDocument();
+  });
+
+  it('displays invalid JWT error on broken token input', () => {
+    render(<JwtInspector />);
+    const textarea = screen.getByLabelText('Encoded JWT Token');
+    fireEvent.change(textarea, { target: { value: 'invalid.token' } });
+    expect(screen.getByText(/Invalid JWT:/i)).toBeInTheDocument();
+  });
+
+  it('successfully inspects JWT with leading Bearer authorization prefix', () => {
+    render(<JwtInspector />);
+    const textarea = screen.getByLabelText('Encoded JWT Token') as HTMLTextAreaElement;
+    const currentToken = textarea.value;
+    fireEvent.change(textarea, { target: { value: `Bearer ${currentToken}` } });
+
+    expect(screen.queryByText(/Invalid JWT:/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/HEADER \(Algorithm & Type\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/PAYLOAD \(Data Claims\)/i)).toBeInTheDocument();
+  });
+});
+
+describe('Regex Substitution', () => {
+  it('replaces regex pattern matches with replacement string via worker', async () => {
+    render(<RegexTester />);
+    const replaceInput = screen.getByLabelText('Regex Replacement Pattern');
+    expect(replaceInput).toBeInTheDocument();
+    fireEvent.change(replaceInput, { target: { value: 'REPLACED' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/REPLACED/)).toBeInTheDocument();
+    });
+  });
+
+  it('handles capture group tokens $1 and full match $& in replacement', async () => {
+    render(<RegexTester />);
+    const patternInput = screen.getByLabelText(/regular expression pattern/i);
+    const sampleInput = screen.getByLabelText(/test string input/i);
+    const replaceInput = screen.getByLabelText('Regex Replacement Pattern');
+
+    fireEvent.change(patternInput, { target: { value: '([a-z]+)' } });
+    fireEvent.change(sampleInput, { target: { value: 'cat dog' } });
+    fireEvent.change(replaceInput, { target: { value: '<$1>' } });
+
+    await waitFor(() => {
+      expect(screen.getByText(/<cat> <dog>/)).toBeInTheDocument();
+    });
+  });
+});
+
+describe('Hash Routing & Deep Linking', () => {
+  it('navigates directly to tool when hash is provided in URL', () => {
+    window.location.hash = '#/jwt-inspector';
+    render(<App />);
+    expect(screen.getByRole('heading', { name: /JSON Web Token \(JWT\) Inspector/i })).toBeInTheDocument();
+    window.location.hash = '';
+  });
+
+  it('falls back to landing overview if hash is invalid', () => {
+    window.location.hash = '#/nonexistent-tool';
+    render(<App />);
+    expect(screen.getByRole('heading', { name: 'DevKit Forge' })).toBeInTheDocument();
+    window.location.hash = '';
   });
 });

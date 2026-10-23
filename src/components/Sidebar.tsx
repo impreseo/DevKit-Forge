@@ -19,6 +19,8 @@ const CATEGORIES: { id: ToolCategory; label: string }[] = [
   { id: 'all', label: 'All Utilities' },
   { id: 'json', label: 'JSON Suite' },
   { id: 'regex', label: 'Regex Tester' },
+  { id: 'encoding', label: 'Encoders & Codecs' },
+  { id: 'security', label: 'Security & Hashes' },
   { id: 'git', label: 'Git & Config' },
   { id: 'documentation', label: 'Documentation' },
 ];

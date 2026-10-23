@@ -442,6 +442,53 @@ tags
 # Persistent undo
 [._]*.un~`,
   },
+  {
+    id: 'docker',
+    name: 'Docker',
+    category: 'Frameworks',
+    description: 'Docker compose overrides, PID files, and local volumes.',
+    content: `# Docker compose local overrides
+docker-compose.override.yml
+*.local.yml
+
+# Docker container logs and secrets
+*.env.docker
+.docker/
+docker-compose.*.env`,
+  },
+  {
+    id: 'terraform',
+    name: 'Terraform / OpenTofu',
+    category: 'Frameworks',
+    description: 'Terraform local state, provider plugins, and crash logs.',
+    content: `# Terraform local state and backups
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration and plugins
+.terraform/
+.terraform.lock.hcl`,
+  },
+  {
+    id: 'gradle',
+    name: 'Gradle',
+    category: 'Languages',
+    description: 'Gradle build caches, wrapper jar, and task artifacts.',
+    content: `# Gradle build cache and outputs
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/`,
+  },
 ];
 
 /**

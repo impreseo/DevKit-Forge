@@ -43,7 +43,7 @@ Web-based developer utility sites are frequently overloaded with third-party tra
 
 ## ✨ Implemented Tools & Features
 
-DevKit Forge currently includes **7 focused developer utilities**, organized into modular suites with a desktop IDE interface:
+DevKit Forge includes **10 focused developer utilities**, organized into modular suites with a desktop IDE interface:
 
 ### 1. JSON Suite
 * **JSON Formatter:** Prettify and format arbitrary JSON with configurable indentation (2 spaces, 4 spaces, or tabs) and optional alphabetical key sorting.
@@ -53,23 +53,35 @@ DevKit Forge currently includes **7 focused developer utilities**, organized int
 
 ### 2. Regular Expression Suite
 * **Regex Tester:** Real-time pattern evaluation against test strings with alternating highlight badges.
+* **Regex Substitution:** In-browser string replacement and substitution supporting capture group placeholders (`$1`, `$2`), full match (`$&`), and instant copy.
 * **Full Flag Support:** Toggle `g` (global), `i` (ignore case), `m` (multiline), `s` (dotAll), `u` (unicode), `v` (unicodeSets), and `y` (sticky).
 * **Match & Capture Group Inspector:** Detailed breakdown of match index spans, match lengths, and named/numbered capture groups.
 * **Worker-Isolated Execution:** Pattern evaluation runs in a dedicated, terminable Web Worker with a 500 ms safety timeout to protect the UI thread from catastrophic backtracking (ReDoS).
 * **Curated Pattern Presets:** Quick-load test patterns for Email, URL, SemVer, IPv4, ISO 8601 timestamps, Hex colors, and UUID v4.
 
-### 3. Git Utilities
-* **.gitignore Generator:** 15+ curated local templates across Languages (Node.js, Python, Rust, Go, Java, C/C++), Frameworks (React/Vite, Next.js, Flutter), Operating Systems (macOS, Windows, Linux), and Editors (VS Code, JetBrains, Vim).
+### 3. Encoders & Codecs
+* **Base64, URL & Hex Encoders:** Multi-codec transformation supporting Base64, URL Components, and Hexadecimal representations.
+* **UTF-8 Safe Engine:** Uses `TextEncoder` and `TextDecoder` to safely encode/decode multi-byte unicode code points and emojis without browser `btoa`/`atob` Latin-1 crashes.
+* **Live Byte Metrics & Swap:** Real-time character and byte calculations with 1-click input/output swap and validation diagnostics.
+
+### 4. Security & Cryptography
+* **Cryptographic Hashes:** Calculate SHA-256, SHA-512, SHA-384, and SHA-1 digests using standard browser Web Crypto APIs (`crypto.subtle`).
+* **UUID v4 Generator:** Generate cryptographically secure RFC 4122 UUID v4 identifiers via `crypto.randomUUID()` with custom batch sizes (1 to 50), hyphen toggles, and casing controls.
+* **JWT Inspector:** Decode JSON Web Token header and payload claims client-side with relative expiration countdown indicators (`exp`, `iat`, `nbf`) and explicit security advisory banners.
+
+### 5. Git Utilities
+* **.gitignore Generator:** 18+ curated local templates across Languages (Node.js, Python, Rust, Go, Java, C/C++, Gradle), Frameworks (React/Vite, Next.js, Flutter), Infrastructure (Docker, Terraform), Operating Systems (macOS, Windows, Linux), and Editors (VS Code, JetBrains, Vim).
 * **Zero-Network Generation:** Templates are compiled directly into the client bundle—no external GitHub API calls or internet connection required.
 * **Custom Rules & Export:** Filter templates by category, toggle multiple tags, append project-specific rules, and copy to clipboard or download directly as a `.gitignore` file.
 
-### 4. Documentation Suite
+### 6. Documentation Suite
 * **Markdown Preview:** Safe GitHub Flavored Markdown (GFM) editor with live preview supporting tables, task lists (`- [x]`), inline code, fenced code blocks, and blockquotes.
 * **Flexible Layouts:** Switch seamlessly between split editor/preview, editor-only, and preview-only modes.
 * **XSS Sanitization:** Rendered HTML is parsed via `marked` and sanitized with `DOMPurify` to ensure arbitrary script injections cannot execute.
 * **Live Metrics & Export:** Real-time character, word, and line counters, estimated reading time, copy rendered HTML, and direct `.md` file download.
 
-### 5. Desktop IDE Interface & Ergonomics
+### 7. Desktop IDE Interface & Ergonomics
+* **Deep Linking & Hash Navigation:** Direct navigation to any tool via `#/tool-id` (e.g. `#/jwt-inspector`). Seamless browser Back/Forward history and tab refresh retention without transmitting user document data in URLs.
 * **Command Palette (`Ctrl+K` or `⌘K`):** Global keyboard shortcut opening a searchable modal with instant fuzzy search across all tools, descriptions, and tags.
 * **Favorites & Recent Tools:** Pin frequently used tools to the navigation bar and access your recent tool history.
 * **Theme Support:** Switch between Dark mode (default), Light mode, and OS System preference.

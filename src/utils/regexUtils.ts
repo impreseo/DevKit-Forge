@@ -5,6 +5,7 @@ export interface RegexTestResult {
   error?: string;
   matches: RegexMatchResult[];
   executionTimeMs: number;
+  replacedText?: string;
 }
 
 export interface RegexPreset {
@@ -104,13 +105,15 @@ export function executeRegex(
   pattern: string,
   flags: string,
   testString: string,
-  maxMatches = 2000
+  maxMatches = 2000,
+  replacement?: string
 ): RegexTestResult {
   if (!pattern) {
     return {
       isValid: true,
       matches: [],
       executionTimeMs: 0,
+      replacedText: testString,
     };
   }
 
@@ -228,10 +231,21 @@ export function executeRegex(
       }
     }
 
+    let replacedText = testString;
+    if (typeof replacement === 'string') {
+      try {
+        const replaceRegex = new RegExp(pattern, flags);
+        replacedText = testString.replace(replaceRegex, replacement);
+      } catch {
+        replacedText = testString;
+      }
+    }
+
     return {
       isValid: true,
       matches,
       executionTimeMs: Math.round((performance.now() - startTime) * 100) / 100,
+      replacedText,
     };
   } catch (runtimeErr) {
     return {
@@ -241,6 +255,7 @@ export function executeRegex(
       }`,
       matches: [],
       executionTimeMs: performance.now() - startTime,
+      replacedText: testString,
     };
   }
 }

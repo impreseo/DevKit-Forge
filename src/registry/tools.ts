@@ -6,6 +6,9 @@ import { JsonDiff } from '../components/tools/JsonDiff';
 import { RegexTester } from '../components/tools/RegexTester';
 import { GitignoreGenerator } from '../components/tools/GitignoreGenerator';
 import { MarkdownPreview } from '../components/tools/MarkdownPreview';
+import { Base64UrlCodec } from '../components/tools/Base64UrlCodec';
+import { HashUuidGenerator } from '../components/tools/HashUuidGenerator';
+import { JwtInspector } from '../components/tools/JwtInspector';
 import {
   FileCode,
   Minimize2,
@@ -14,6 +17,9 @@ import {
   Search,
   GitBranch,
   FileText,
+  Binary,
+  Fingerprint,
+  KeyRound,
 } from 'lucide-react';
 
 export const TOOL_REGISTRY: ToolMetadata[] = [
@@ -85,6 +91,36 @@ export const TOOL_REGISTRY: ToolMetadata[] = [
     tags: ['markdown', 'preview', 'gfm', 'docs', 'readme', 'editor', 'html-export', 'sanitized'],
     icon: FileText,
     component: MarkdownPreview,
+    featured: true,
+  },
+  {
+    id: 'base64-url-codec',
+    title: 'Base64 & URL Codec',
+    shortDescription: 'UTF-8 safe Base64, URL component, and Hexadecimal encoder/decoder.',
+    category: 'encoding',
+    tags: ['base64', 'url', 'uri', 'hex', 'encode', 'decode', 'utf8', 'binary'],
+    icon: Binary,
+    component: Base64UrlCodec,
+    featured: true,
+  },
+  {
+    id: 'hash-uuid-generator',
+    title: 'Hash & UUID Generator',
+    shortDescription: 'Compute SHA-256/512/384/1 hashes and generate RFC 4122 UUID v4 identifiers via Web Crypto.',
+    category: 'security',
+    tags: ['hash', 'sha256', 'sha512', 'sha384', 'sha1', 'crypto', 'uuid', 'guid', 'v4', 'digest'],
+    icon: Fingerprint,
+    component: HashUuidGenerator,
+    featured: true,
+  },
+  {
+    id: 'jwt-inspector',
+    title: 'JWT Inspector',
+    shortDescription: 'Inspect and debug JSON Web Tokens with claims decoding and expiration time analysis.',
+    category: 'security',
+    tags: ['jwt', 'json-web-token', 'token', 'decode', 'claims', 'expiration', 'header', 'payload', 'auth'],
+    icon: KeyRound,
+    component: JwtInspector,
     featured: true,
   },
 ];

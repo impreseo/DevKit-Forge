@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type ToolCategory = 'all' | 'json' | 'regex' | 'git' | 'documentation';
+export type ToolCategory = 'all' | 'json' | 'regex' | 'encoding' | 'security' | 'git' | 'documentation';
 
 export interface ToolMetadata {
   id: string;

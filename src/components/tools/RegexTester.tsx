@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { buildHighlightSegments, COMMON_REGEX_PRESETS, RegexPreset, RegexTestResult } from '../../utils/regexUtils';
-import { Search, AlertCircle, CheckCircle2, Copy, Check, Trash2, BookOpen } from 'lucide-react';
+import { Search, AlertCircle, CheckCircle2, Copy, Check, Trash2, BookOpen, Replace } from 'lucide-react';
 
 const FLAGS_LIST = [
   { flag: 'g', label: 'Global', desc: 'Find all matches rather than stopping after the first' },
@@ -18,7 +18,9 @@ export const RegexTester: React.FC = () => {
   const [testString, setTestString] = useState<string>(
     'DevKit Forge contact list:\nPrimary: contact@devkitforge.dev\nSupport: support.team+priority@infra.internal.io\nInvalid: user@bad_host'
   );
+  const [replacement, setReplacement] = useState<string>('[$1]');
   const [copied, setCopied] = useState<boolean>(false);
+  const [replaceCopied, setReplaceCopied] = useState<boolean>(false);
 
   const toggleFlag = (flagChar: string) => {
     if (flags.includes(flagChar)) {
@@ -42,6 +44,7 @@ export const RegexTester: React.FC = () => {
     isValid: true,
     matches: [],
     executionTimeMs: 0,
+    replacedText: testString,
   });
 
   // A Worker keeps user-supplied regular expressions off the UI thread. Terminating
@@ -52,11 +55,23 @@ export const RegexTester: React.FC = () => {
     let settled = false;
 
     if (pattern.length > 2_000) {
-      setTestResult({ isValid: false, error: 'Pattern is too long (maximum 2,000 characters).', matches: [], executionTimeMs: 0 });
+      setTestResult({
+        isValid: false,
+        error: 'Pattern is too long (maximum 2,000 characters).',
+        matches: [],
+        executionTimeMs: 0,
+        replacedText: testString,
+      });
       return;
     }
     if (testString.length > 200_000) {
-      setTestResult({ isValid: false, error: 'Test text is too long (maximum 200,000 characters).', matches: [], executionTimeMs: 0 });
+      setTestResult({
+        isValid: false,
+        error: 'Test text is too long (maximum 200,000 characters).',
+        matches: [],
+        executionTimeMs: 0,
+        replacedText: testString,
+      });
       return;
     }
 
@@ -74,18 +89,36 @@ export const RegexTester: React.FC = () => {
           if (settled) return;
           settled = true;
           if (timeoutId) clearTimeout(timeoutId);
-          setTestResult({ isValid: false, error: 'Regex worker failed. Try a simpler pattern or shorter input.', matches: [], executionTimeMs: 0 });
+          setTestResult({
+            isValid: false,
+            error: 'Regex worker failed. Try a simpler pattern or shorter input.',
+            matches: [],
+            executionTimeMs: 0,
+            replacedText: testString,
+          });
           worker?.terminate();
         };
         timeoutId = setTimeout(() => {
           if (settled) return;
           settled = true;
           worker?.terminate();
-          setTestResult({ isValid: false, error: 'Regex execution timed out after 500 ms. The pattern may be too expensive; simplify it and try again.', matches: [], executionTimeMs: 500 });
+          setTestResult({
+            isValid: false,
+            error: 'Regex execution timed out after 500 ms. The pattern may be too expensive; simplify it and try again.',
+            matches: [],
+            executionTimeMs: 500,
+            replacedText: testString,
+          });
         }, 500);
-        worker.postMessage({ pattern, flags, testString });
+        worker.postMessage({ pattern, flags, testString, replacement });
       } catch {
-        setTestResult({ isValid: false, error: 'Could not start the regex worker in this browser.', matches: [], executionTimeMs: 0 });
+        setTestResult({
+          isValid: false,
+          error: 'Could not start the regex worker in this browser.',
+          matches: [],
+          executionTimeMs: 0,
+          replacedText: testString,
+        });
       }
     }, 100);
 
@@ -95,18 +128,30 @@ export const RegexTester: React.FC = () => {
       if (timeoutId) clearTimeout(timeoutId);
       worker?.terminate();
     };
-  }, [pattern, flags, testString]);
+  }, [pattern, flags, testString, replacement]);
 
   const highlightSegments = useMemo(() => {
     if (!testResult.isValid) return [];
     return buildHighlightSegments(testString, testResult.matches);
   }, [testString, testResult]);
 
+  const replacedText = testResult.replacedText ?? testString;
+
   const handleCopyPattern = async () => {
     try {
       await navigator.clipboard.writeText(`/${pattern}/${flags}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const handleCopyReplaced = async () => {
+    try {
+      await navigator.clipboard.writeText(replacedText);
+      setReplaceCopied(true);
+      setTimeout(() => setReplaceCopied(false), 2000);
     } catch {
       // Fallback
     }
@@ -341,6 +386,54 @@ export const RegexTester: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Regex Substitution & Replacement Panel */}
+      <div className="rounded border border-ide-border-light dark:border-ide-border bg-ide-surface-light dark:bg-ide-surface overflow-hidden space-y-3 p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ide-border-light dark:border-ide-border pb-2 text-xs">
+          <div className="flex items-center gap-1.5 font-medium text-ide-text-light dark:text-ide-text">
+            <Replace className="w-4 h-4 text-sky-500" />
+            <span>Regex Substitution & Replacement</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopyReplaced}
+              disabled={!testResult.isValid}
+              className="flex items-center gap-1 px-3 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium text-xs disabled:opacity-40 transition-colors"
+            >
+              {replaceCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{replaceCopied ? 'Copied' : 'Copy Replaced Text'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Replacement pattern input */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs">
+          <div className="flex items-center flex-1 bg-ide-panel-light dark:bg-ide-panel rounded border border-ide-border-light dark:border-ide-border px-3 py-1.5 focus-within:border-sky-500">
+            <span className="text-ide-text-muted mr-2 font-medium">Replace with:</span>
+            <input
+              aria-label="Regex Replacement Pattern"
+              type="text"
+              value={replacement}
+              onChange={(e) => setReplacement(e.target.value)}
+              placeholder="e.g. [$1] or $& or redacted"
+              className="flex-1 bg-transparent font-mono text-xs text-ide-text-light dark:text-ide-text focus:outline-none"
+              spellCheck={false}
+            />
+          </div>
+          <span className="text-[11px] text-ide-text-muted font-mono self-center">
+            Supports <code className="text-sky-500 font-semibold">$1, $2</code> (groups), <code className="text-sky-500 font-semibold">$&amp;</code> (full match)
+          </span>
+        </div>
+
+        {/* Substituted Output preview */}
+        <div className="p-3 rounded border border-ide-border-light dark:border-ide-border bg-ide-panel-light dark:bg-ide-panel/60 max-h-48 overflow-y-auto">
+          <pre className="font-mono text-xs text-ide-text-light dark:text-ide-text whitespace-pre-wrap break-all leading-relaxed">
+            {replacedText}
+          </pre>
+        </div>
+      </div>
     </div>
   );
 };
