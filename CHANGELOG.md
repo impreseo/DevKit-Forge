@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-10-23
+
+### Highlights
+* **Three New Developer Tools:**
+  * **Base64, URL & Hex Encoders:** UTF-8 compliant transformation engine with bidirectional swap, character/byte counters, and strict hexadecimal format validation.
+  * **Hash & UUID Generator:** Native Web Crypto SHA-256, SHA-512, SHA-384, and SHA-1 hashing alongside RFC 4122 UUID v4 bulk generation with actionable error handling in insecure browser contexts.
+  * **JWT Inspector:** Safe in-memory JSON Web Token debugger displaying Header, Payload, and Signature components with relative expiration countdown analysis (`exp`, `iat`, `nbf`), `Bearer` authorization prefix stripping, and prominent security distinction banners.
+* **Navigation & Discoverability:**
+  * **Hash-Based Deep Linking:** Direct URL access (`#/tool-id`), tab refresh state preservation, and seamless browser Back/Forward navigation fully compatible with GitHub Pages base path.
+* **Regex Engine Enhancements:**
+  * **Worker-Isolated Substitution:** Regex string replacement and substitution executed within the sandboxed Web Worker with 500 ms watchdog timeout protection and support for capture group tokens (`$1`, `$2`, `$&`, `$$`).
+* **Git Utilities Expansion:**
+  * Added curated templates for **Docker**, **Terraform**, and **Gradle**.
+* **SEO & Social Distribution:**
+  * Configured Open Graph and Twitter Card tags pointing to genuine workspace preview imagery.
+* **Developer Attribution:**
+  * Documented project creator Niranjan (IMPRESEO) and acknowledged development assistance from ChatGPT, Claude, Claude Opus, and Gemini.
+
+---
+
 ## [1.0.0] - 2026-10-22
 
 ### Summary

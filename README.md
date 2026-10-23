@@ -197,8 +197,14 @@ We welcome community contributions, including new browser-native developer tools
 
 ## 📌 Project Status
 
-**Current Version:** `1.0.0` (Initial Release)  
-DevKit Forge is actively maintained. Its core foundation and initial 7 utilities are stable and tested. Upcoming tools and milestone tracking are documented in [ROADMAP.md](ROADMAP.md).
+**Current Version:** `1.1.0`<br>
+DevKit Forge is actively maintained. Its core foundation and 10 developer utilities are stable, thoroughly tested, and client-side isolated. Upcoming tools and milestone tracking are documented in [ROADMAP.md](ROADMAP.md).
+
+---
+
+## 👨‍💻 Creator & Acknowledgements
+
+DevKit Forge was created by [Niranjan](https://github.com/impreseo) ([IMPRESEO](https://github.com/impreseo)), with development assistance from [ChatGPT](https://chatgpt.com), [Claude](https://claude.ai), Claude Opus, and [Gemini](https://gemini.google.com).
 
 ---
 
